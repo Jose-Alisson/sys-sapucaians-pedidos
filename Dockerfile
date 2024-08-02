@@ -1,0 +1,17 @@
+FROM openjdk:19
+LABEL authors="José Alisson"
+
+ARG URL
+ARG USERNAME
+ARG PASSWORD
+
+ENV DATABASE_URL=${URL}
+ENV DATABASE_USERNAME=${USERNAME}
+ENV DATABASE_PASSWORD=${PASSWORD}
+
+EXPOSE 8080
+
+WORKDIR /main
+COPY target/joliny-pedidos-0.0.1-SNAPSHOT.jar .
+
+CMD ["java","joliny-pedidos-0.0.1-SNAPSHOT.jar","-jar"]
