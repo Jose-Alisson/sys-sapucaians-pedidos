@@ -9,6 +9,7 @@ import br.joliny.pedidos.repository.OrderRepository;
 import br.joliny.pedidos.services.impl.MethodsCRUD;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,6 +24,8 @@ import java.util.Optional;
 @Service
 public class OrderService implements MethodsCRUD<OrderDTO, Order> {
 
+    @Value("${api.main.url}")
+    private String API_MAIN = "http://localhost:4000";
     private final WebClient client = WebClient.create();
 
     @Autowired
@@ -37,7 +40,7 @@ public class OrderService implements MethodsCRUD<OrderDTO, Order> {
 
         OrderDTO dto = mapper.map(repository.save(o), OrderDTO.class);
 
-       String a = client.post().uri("http://localhost:4000/order/add").bodyValue(dto).retrieve().bodyToMono(String.class).block();
+       String a = client.post().uri("%s/order/add".formatted(API_MAIN)).bodyValue(dto).retrieve().bodyToMono(String.class).block();
 
         System.out.println(a);
         System.out.println("^^");
@@ -60,7 +63,7 @@ public class OrderService implements MethodsCRUD<OrderDTO, Order> {
 
             var dto = mapper.map(repository.save(pedido), OrderDTO.class);
 
-            String a = client.post().uri("http://localhost:4000/order/add").bodyValue(dto).retrieve().bodyToMono(String.class).block();
+            String a = client.post().uri("%s/order/add".formatted(API_MAIN)).bodyValue(dto).retrieve().bodyToMono(String.class).block();
 
             return dto;
         }

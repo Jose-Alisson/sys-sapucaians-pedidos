@@ -14,4 +14,4 @@ EXPOSE 8080
 WORKDIR /main
 COPY target/joliny-pedidos-0.0.1-SNAPSHOT.jar .
 
-CMD ["java","joliny-pedidos-0.0.1-SNAPSHOT.jar","-jar"]
+CMD ["java", "-jar", "/main/joliny-pedidos-0.0.1-SNAPSHOT.jar"]
