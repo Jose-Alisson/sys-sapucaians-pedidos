@@ -25,7 +25,8 @@ import java.util.Optional;
 public class OrderService implements MethodsCRUD<OrderDTO, Order> {
 
     @Value("${api.main.url}")
-    private String API_MAIN = "http://localhost:4000";
+    private String API_MAIN;
+
     private final WebClient client = WebClient.create();
 
     @Autowired
@@ -39,6 +40,8 @@ public class OrderService implements MethodsCRUD<OrderDTO, Order> {
         o.setDateCreation(LocalDateTime.now());
 
         OrderDTO dto = mapper.map(repository.save(o), OrderDTO.class);
+
+        System.out.println("%s/order/add".formatted(API_MAIN));
 
        String a = client.post().uri("%s/order/add".formatted(API_MAIN)).bodyValue(dto).retrieve().bodyToMono(String.class).block();
 
