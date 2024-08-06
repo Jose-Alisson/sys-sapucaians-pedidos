@@ -4,6 +4,9 @@ LABEL authors="José Alisson"
 # Defina o argumento para a versão do Maven
 ARG MAVEN_VERSION=3.8.6
 
+
+
+
 # Instale dependências necessárias e o Maven
 RUN apk update && \
     apk add --no-cache wget tar bash && \
