@@ -22,5 +22,9 @@ public class ProductDTO {
 
     private String category;
 
+    private boolean available;
+
+    private boolean visible;
+
     private List<AdditionalManagerDTO> additional;
 }

@@ -23,6 +23,9 @@ public class ProductService implements MethodsCRUD<ProductDTO, Product> {
     @Autowired
     private ProductRepository repository;
 
+    @Autowired
+    private OrderService orderService;
+
     private final ModelMapper mapper = new ModelMapper();
 
     @Override
@@ -42,6 +45,8 @@ public class ProductService implements MethodsCRUD<ProductDTO, Product> {
                     .photoUrl(productDTO.getPhotoUrl())
                     .description(productDTO.getDescription())
                     .price(productDTO.getPrice())
+                    .available(productDTO.isAvailable())
+                    .visible(productDTO.isVisible())
                     .additional(productDTO.getAdditional().stream().map(manager -> mapper.map(manager, AdditionalManager.class)).toList())
                     .build();
 
@@ -89,7 +94,7 @@ public class ProductService implements MethodsCRUD<ProductDTO, Product> {
         List<Product> produtos = repository.findAll();
 
         Map<String, List<Product>> produtosPorCategoria = produtos.stream()
-                .filter(product -> product.getCategory() != null)
+                .filter(product -> product.getCategory() != null && product.isVisible())
                 .collect(Collectors.groupingBy(Product::getCategory));
 
         // Criar a lista de CategoriaProduto

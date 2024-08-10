@@ -30,6 +30,10 @@ public class Product implements Serializable {
 
     private double price;
 
+    private boolean visible;
+
+    private boolean available;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<AdditionalManager> additional;
 }
