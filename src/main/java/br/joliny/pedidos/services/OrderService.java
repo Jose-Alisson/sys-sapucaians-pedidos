@@ -45,8 +45,6 @@ public class OrderService implements MethodsCRUD<OrderDTO, Order> {
 
        String a = client.post().uri("%s/order/add".formatted(API_MAIN)).bodyValue(dto).retrieve().bodyToMono(String.class).block();
 
-        System.out.println(a);
-        System.out.println("^^");
         return dto;
     }
     @Override

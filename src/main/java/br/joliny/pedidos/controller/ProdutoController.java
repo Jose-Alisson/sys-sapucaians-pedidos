@@ -42,12 +42,13 @@ public class ProdutoController {
     }
 
     @GetMapping("/sortByCategory")
-    public  ResponseEntity<?> getAllToCategory(){
-        return ResponseEntity.ok(service.getAllSortByCategory());
+    public  ResponseEntity<?> getAllToCategory(@RequestParam(name = "visible", defaultValue = "true", required = false) boolean visible){
+        return ResponseEntity.ok(service.getAllSortByCategory(visible));
     }
 
+
     @GetMapping("/search")
-    public ResponseEntity<?> search (@RequestParam("s") String s){
-        return ResponseEntity.ok(service.search(s));
+    public ResponseEntity<?> search (@RequestParam("s") String s, @RequestParam(name = "visible", defaultValue = "true", required = false) boolean visible){
+        return ResponseEntity.ok(service.search(s, visible));
     }
 }

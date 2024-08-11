@@ -89,12 +89,16 @@ public class ProductService implements MethodsCRUD<ProductDTO, Product> {
         }
     }
 
-
-    public List<CategoryDTO> getAllSortByCategory(){
+    public List<CategoryDTO> getAllSortByCategory(boolean visible){
         List<Product> produtos = repository.findAll();
 
         Map<String, List<Product>> produtosPorCategoria = produtos.stream()
-                .filter(product -> product.getCategory() != null && product.isVisible())
+                .filter(product -> { 
+                    if(!visible){
+                        return product.getCategory() != null && product.isVisible(); 
+                    }
+                    return product.getCategory() != null; 
+                })
                 .collect(Collectors.groupingBy(Product::getCategory));
 
         // Criar a lista de CategoriaProduto
@@ -108,7 +112,8 @@ public class ProductService implements MethodsCRUD<ProductDTO, Product> {
         return listaDeCategoriaProdutos;
     }
 
-    public List<ProductDTO> search(String s) {
-        return repository.search(s).stream().map(product -> mapper.map(product, ProductDTO.class)).toList();
+
+    public List<ProductDTO> search(String s, boolean visible) {
+        return repository.search(s, visible).stream().map(product -> mapper.map(product, ProductDTO.class)).toList();
     }
 }
