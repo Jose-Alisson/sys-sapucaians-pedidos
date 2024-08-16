@@ -27,4 +27,6 @@ public class ProductDTO {
     private boolean visible;
 
     private List<AdditionalManagerDTO> additional;
+
+    private String establishment;
 }

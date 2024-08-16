@@ -31,8 +31,7 @@ public class Order implements Serializable {
     @Column(name = "cell_phone")
     private String cellPhone;
 
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Amount> amounts;
 
     private String payment;
@@ -41,4 +40,6 @@ public class Order implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    private String establishment;
 }

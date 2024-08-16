@@ -13,7 +13,7 @@ public class AmountDTO {
 
     private int quantity;
 
-    private String description;
+    private String observation;
 
     private List<Additional> additional;
 }

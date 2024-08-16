@@ -61,7 +61,9 @@ public class ProductService implements MethodsCRUD<ProductDTO, Product> {
         Optional<Product> produto_ = repository.findById(id);
 
         if(produto_.isPresent()){
+            orderService.removeAmountsByProductId(id);
             repository.deleteById(id);
+
             return;
         }
         throw new ErrDataTransfer("Produto de ID: %d não encontrado!".formatted(id), HttpStatus.NOT_FOUND);

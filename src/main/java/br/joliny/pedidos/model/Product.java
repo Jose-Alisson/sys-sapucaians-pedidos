@@ -34,6 +34,8 @@ public class Product implements Serializable {
 
     private boolean available;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AdditionalManager> additional;
+
+    private String establishment;
 }

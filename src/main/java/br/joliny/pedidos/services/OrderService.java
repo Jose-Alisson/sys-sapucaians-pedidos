@@ -3,8 +3,11 @@ package br.joliny.pedidos.services;
 import br.joliny.pedidos.dto.OrderDTO;
 import br.joliny.pedidos.enums.OrderStatus;
 import br.joliny.pedidos.exception.causable.ErrDataTransfer;
+import br.joliny.pedidos.model.AdditionalManager;
 import br.joliny.pedidos.model.Amount;
 import br.joliny.pedidos.model.Order;
+import br.joliny.pedidos.model.Product;
+import br.joliny.pedidos.repository.AmountRepository;
 import br.joliny.pedidos.repository.OrderRepository;
 import br.joliny.pedidos.services.impl.MethodsCRUD;
 import org.modelmapper.ModelMapper;
@@ -18,8 +21,7 @@ import reactor.core.publisher.Mono;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class OrderService implements MethodsCRUD<OrderDTO, Order> {
@@ -32,29 +34,29 @@ public class OrderService implements MethodsCRUD<OrderDTO, Order> {
     @Autowired
     private OrderRepository repository;
 
-    private final ModelMapper mapper =  new ModelMapper();
+    @Autowired
+    private AmountRepository amountRepository;
+
+    private final ModelMapper mapper = new ModelMapper();
 
     @Override
     public OrderDTO create(Order o) {
         o.setStatus(OrderStatus.CREATED);
-        o.setDateCreation(LocalDateTime.now());
+        o.setDateCreation(LocalDateTime.now(TimeZone.getTimeZone("America/Sao_Paulo").toZoneId()));
 
         OrderDTO dto = mapper.map(repository.save(o), OrderDTO.class);
-
-        System.out.println("%s/order/add".formatted(API_MAIN));
-
-       String a = client.post().uri("%s/order/add".formatted(API_MAIN)).bodyValue(dto).retrieve().bodyToMono(String.class).block();
-
+        String a = client.post().uri("%s/order/add".formatted(API_MAIN)).bodyValue(dto).retrieve().bodyToMono(String.class).block();
         return dto;
     }
+
     @Override
     public OrderDTO update(Long id, OrderDTO orderDTO) {
         Optional<Order> pedido_ = repository.findById(id);
 
-        if(pedido_.isPresent()){
+        if (pedido_.isPresent()) {
             Order pedido = Order.builder()
                     .id(id)
-                    .dateCreation(orderDTO.getDateCreation())
+                    .dateCreation(pedido_.get().getDateCreation())
                     .name(orderDTO.getName())
                     .cellPhone(orderDTO.getCellPhone())
                     .amounts(orderDTO.getAmounts().stream().map(contadorDTO -> mapper.map(contadorDTO, Amount.class)).toList())
@@ -76,7 +78,7 @@ public class OrderService implements MethodsCRUD<OrderDTO, Order> {
     public void delete(Long id) {
         Optional<Order> pedido_ = repository.findById(id);
 
-        if(pedido_.isPresent()){
+        if (pedido_.isPresent()) {
             repository.deleteById(id);
             return;
         }
@@ -88,7 +90,7 @@ public class OrderService implements MethodsCRUD<OrderDTO, Order> {
     public OrderDTO get(Long id) {
         Optional<Order> pedido_ = repository.findById(id);
 
-        if(pedido_.isPresent()){
+        if (pedido_.isPresent()) {
             return mapper.map(pedido_.get(), OrderDTO.class);
         }
 
@@ -99,10 +101,36 @@ public class OrderService implements MethodsCRUD<OrderDTO, Order> {
     public List<OrderDTO> getAll() {
         List<Order> pedidos_ = repository.findAll();
 
-        if(pedidos_.isEmpty()){
+        if (pedidos_.isEmpty()) {
             throw new ErrDataTransfer("Lista de pedidos vazia", HttpStatus.NO_CONTENT);
         }
         return pedidos_.stream().map(pedido -> mapper.map(pedido, OrderDTO.class)).toList();
+    }
+
+    public void removeAmountsByProductId(Long id) {
+        List<Order> orders = new ArrayList<>();
+
+        repository.findAllByProductIndex(id).forEach(order -> {
+            var amounts = order.getAmounts().stream().filter(amount -> amount.getProduct().getId() != id).toList();
+
+            amountRepository.deleteAll(amounts);
+
+            System.out.println(amounts);
+            Order pedido = Order.builder()
+                    .id(order.getId())
+                    .dateCreation(order.getDateCreation())
+                    .name(order.getName())
+                    .cellPhone(order.getCellPhone())
+                    .amounts(order.getAmounts().stream().filter(amount -> amount.getProduct().getId() != id).toList())
+                    .payment(order.getPayment())
+                    .address(order.getAddress())
+                    .status(order.getStatus()).build();
+
+            orders.add(pedido);
+        });
+
+        repository.saveAll(orders);
+        String a = client.post().uri("%s/order/reload".formatted(API_MAIN)).retrieve().bodyToMono(String.class).block();
     }
 
     public List<Date> getDates() {

@@ -27,6 +27,6 @@ public class AdditionalManager implements Serializable {
 
     private int min;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Additional> additional;
 }

@@ -27,4 +27,6 @@ public class OrderDTO {
     private String address;
 
     private OrderStatus status;
+
+    private String establishment;
 }
